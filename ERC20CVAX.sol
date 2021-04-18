@@ -13,9 +13,10 @@ contract ERC20CVAX {
     uint256 private _totalSupply;
     
     address private _contract_owner;
+    
     mapping(address => bool) pharm_company;
     mapping(address => bool) vax_center;
-    
+    mapping(address => bool) patient;
     mapping(address => uint256) dose_history;
     
     using SafeMath for uint256;
@@ -36,8 +37,10 @@ contract ERC20CVAX {
     //Contract owner registers a new pharmaceutical company to supply vaccines
     function registerPharmCompany(address company) public returns (bool) {
         require(msg.sender == _contract_owner);
+        require(company != address(0));
         require(company != _contract_owner);
         require(!vax_center[company]);
+        require(!patient[company]);
         pharm_company[company] = true;
         return true;
     }
@@ -45,8 +48,10 @@ contract ERC20CVAX {
     //Contract owner registers a new vaccination center
     function registerVaxCenter(address center) public returns (bool) {
         require(msg.sender == _contract_owner);
+        require(center != address(0));
         require(center != _contract_owner);
         require(!pharm_company[center]);
+        require(!patient[center]);
         vax_center[center] = true;
         return true;
     }
@@ -73,6 +78,7 @@ contract ERC20CVAX {
             if (balances[_to] == 1 && block.timestamp - dose_history[_to] < 1602933557) {
                 return false;
             }
+            patient[_to] = true;
             dose_history[_to] = block.timestamp;
             balances[msg.sender] = balances[msg.sender].sub(_value);
         }
