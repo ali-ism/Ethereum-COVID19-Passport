@@ -14,10 +14,10 @@ contract ERC20CVAX {
     
     address private _contract_owner;
     
-    mapping(address => bool) pharm_company;
-    mapping(address => bool) vax_center;
-    mapping(address => bool) patient;
-    mapping(address => uint256) dose_history;
+    mapping(address => bool) public pharm_company;
+    mapping(address => bool) public vax_center;
+    mapping(address => bool) public patient;
+    mapping(address => uint256) public dose_history;
     
     using SafeMath for uint256;
     
@@ -31,6 +31,7 @@ contract ERC20CVAX {
     }
     
     function balanceOf(address _owner) public view returns (uint256) {
+        require(!pharm_company[_owner]);
         return balances[_owner];
     }
     
@@ -74,9 +75,9 @@ contract ERC20CVAX {
             require(!pharm_company[_to]);
             require(balances[_to] < 2);
             require(_value == 1);
-            //if not first dose check if 6 months have passed since first dose
-            if (balances[_to] == 1 && block.timestamp - dose_history[_to] < 1602933557) {
-                return false;
+            //if not first dose check if 1 month has passed since first dose
+            if (balances[_to] == 1 && block.timestamp - dose_history[_to] < 2592000) {
+                revert();
             }
             patient[_to] = true;
             dose_history[_to] = block.timestamp;
