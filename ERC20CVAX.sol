@@ -90,8 +90,7 @@ contract ERC20CVAX {
     
     //Check if holder of valid COVID-19 passport
     function isValidPassport(address _owner) public view returns (bool) {
-        require(!vax_center[_owner]);
-        require(!pharm_company[_owner]);
+        require(patient[_owner]);
         return balances[_owner] == 2;
     }
 }
